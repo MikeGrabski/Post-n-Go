@@ -200,6 +200,7 @@ public class MainActivity extends Activity {
                     sceneView.setEGLConfigChooser(8,8,8,8,0,0);
                     sceneView.setZOrderOnTop(true);
                     sceneRenderer = new PictureRenderer(MainActivity.this);
+                    sceneView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     sceneView.setRenderer(sceneRenderer);
                     wallView.addView(sceneView);
                     sceneRenderer.attachToWall();
@@ -252,10 +253,11 @@ public class MainActivity extends Activity {
 
         if(permissionsToBeRequested.size() == 0) {
             cameraPreview = new CameraPreview(getApplicationContext());
-            camWidth = cameraPreview.getPreviewSize().width;
-            camHeight = cameraPreview.getPreviewSize().height;
+
+            camWidth = cameraPreview.getPreviewSize().width;   ///////////////////
+            camHeight = cameraPreview.getPreviewSize().height;   ////////////////
             pre = new Mat(camHeight + camHeight/2, camWidth, CvType.CV_8UC1);
-//            cameraPreview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)); ////////////////////////
+            cameraPreview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)); ////////////////////////
             wallView.addView(cameraPreview);
             gpsTracker = new GPSTracker(this);
         } else {
@@ -274,10 +276,10 @@ public class MainActivity extends Activity {
                     finish();
                 } else {
                     cameraPreview = new CameraPreview(getApplicationContext());
-                    camWidth = cameraPreview.getPreviewSize().width;
-                    camHeight = cameraPreview.getPreviewSize().height;
+                    camWidth = cameraPreview.getWidth();
+                    camHeight = cameraPreview.getHeight();
                     pre = new Mat(camHeight + camHeight/2, camWidth, CvType.CV_8UC1);
-//                    cameraPreview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)); ////////////////////////
+                    cameraPreview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)); ////////////////////////
                     wallView.addView(cameraPreview);
                     gpsTracker = new GPSTracker(this);
                 }
@@ -373,8 +375,7 @@ public class MainActivity extends Activity {
         pre.put(0, 0, data);
         Imgproc.cvtColor(pre, img, Imgproc.COLOR_YUV2GRAY_NV21);
         Core.transpose(img, img);
-        Core.flip(img, img, 1);
-        Imgproc.resize(img, img,new Size(360,426),0,0,Imgproc.INTER_NEAREST);
+        Imgproc.resize(img, img,new Size(360,426),0,0,Imgproc.INTER_NEAREST); ///////////////////// 360, 426
         return img;
     }
 
