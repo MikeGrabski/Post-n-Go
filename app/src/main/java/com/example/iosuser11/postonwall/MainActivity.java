@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -58,7 +59,6 @@ public class MainActivity extends Activity {
 
     public static ArrayList<PictureObject> allPicturesList;     //all of the pictures posted via this app, must be in the server in future
     public ArrayList<PictureObject> nearbyPicturesList;      //pictures posted nearby, is reinitialized every time we enable tracking
-//    public ArrayList<PicViewAndRend> currentPicturesList;     //pictures currently being tracked, is reinitialized ever time we enable tracking
     public ArrayList currentPicturesIndexesList;     //indexes of the pictures currently being tracked in the list of the nearbyPicturesList, is reinitialized ever time we enable tracking
 
     //UI stuff
@@ -79,15 +79,14 @@ public class MainActivity extends Activity {
     //Image processing stuff
     Mat imgCurrent;
     Mat pre;
+    Mat descriptorsPrevious;
+    Mat descriptorsCurrent;
     FeatureDetector detector;
     DescriptorExtractor descriptor;
     DescriptorMatcher matcher;
     MatOfKeyPoint keypointsPrevious;
     MatOfKeyPoint keypointsCurrent;
-    Mat descriptorsPrevious;
-    Mat descriptorsCurrent;
     MatOfDMatch matches;
-    MatOfDMatch successiveMatches;
 
     //Sensors
     private GPSTracker gpsTracker;
@@ -256,6 +255,7 @@ public class MainActivity extends Activity {
             camWidth = cameraPreview.getPreviewSize().width;
             camHeight = cameraPreview.getPreviewSize().height;
             pre = new Mat(camHeight + camHeight/2, camWidth, CvType.CV_8UC1);
+//            cameraPreview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)); ////////////////////////
             wallView.addView(cameraPreview);
             gpsTracker = new GPSTracker(this);
         } else {
@@ -277,6 +277,7 @@ public class MainActivity extends Activity {
                     camWidth = cameraPreview.getPreviewSize().width;
                     camHeight = cameraPreview.getPreviewSize().height;
                     pre = new Mat(camHeight + camHeight/2, camWidth, CvType.CV_8UC1);
+//                    cameraPreview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)); ////////////////////////
                     wallView.addView(cameraPreview);
                     gpsTracker = new GPSTracker(this);
                 }

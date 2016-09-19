@@ -75,6 +75,7 @@
         android:max="18"
         android:progress="9"
         android:layout_above="@+id/relativeLayout2"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
