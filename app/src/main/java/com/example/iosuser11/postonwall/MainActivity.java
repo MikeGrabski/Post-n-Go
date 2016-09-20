@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.iosuser11.postonwall.GL.PicturePreviewRenderer;
 import com.example.iosuser11.postonwall.GL.PictureRenderer;
 import com.example.iosuser11.postonwall.GL.PictureView;
 import com.example.iosuser11.postonwall.GL.Table;
@@ -74,7 +75,7 @@ public class MainActivity extends Activity {
     private PictureView sceneView;
     private PictureRenderer sceneRenderer;
     private PictureView previewView;
-    private PictureRenderer previewRenderer;
+    private PicturePreviewRenderer previewRenderer;
 
     //Image processing stuff
     Mat imgCurrent;
@@ -194,11 +195,13 @@ public class MainActivity extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if(isChecked) {     //we enabled tracking
                     findImagesNearby();
+                    wallView.removeView(previewView);
                     sceneView = new PictureView(getApplicationContext(), camWidth, camHeight);
                     sceneView.setEGLContextClientVersion(2);
                     sceneView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
                     sceneView.setEGLConfigChooser(8,8,8,8,0,0);
-                    sceneView.setZOrderOnTop(true);
+//                    sceneView.setZOrderOnTop(true);
+                    sceneView.setZOrderMediaOverlay(true);
                     sceneRenderer = new PictureRenderer(MainActivity.this);
                     sceneView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     sceneView.setRenderer(sceneRenderer);
@@ -321,9 +324,13 @@ public class MainActivity extends Activity {
                     previewView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
                     previewView.setEGLConfigChooser(8,8,8,8,0,0);
                     previewView.setZOrderOnTop(true);
-                    previewRenderer = new PictureRenderer(this);
-                    previewRenderer.addTable(getApplicationContext(), selectedPicture, seekBar.getProgress());
+//                    previewRenderer = new PictureRenderer(this);
+                    previewRenderer = new PicturePreviewRenderer(MainActivity.this);
+                    previewRenderer.addTable(getApplicationContext(), selectedPicture);
+
+                  //  previewRenderer.addTable(getApplicationContext(), selectedPicture, seekBar.getProgress());
                     previewView.setRenderer(previewRenderer);
+                    previewView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     wallView.addView(previewView);
                     previewView.bringToFront();
                 }
