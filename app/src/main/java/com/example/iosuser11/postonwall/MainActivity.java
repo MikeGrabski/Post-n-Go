@@ -72,9 +72,9 @@ public class MainActivity extends Activity {
     private Switch tracking;
     private SeekBar seekBar;
     private TextView messages;
-    private PictureView sceneView;
+    private PictureView sceneView; // after post(the one, which is moving(staying at the wall))
     private PictureRenderer sceneRenderer;
-    private PictureView previewView;
+    private PictureView previewView;  // before post (that one, which is not moving)
     private PicturePreviewRenderer previewRenderer;
 
     //Image processing stuff
@@ -170,7 +170,8 @@ public class MainActivity extends Activity {
                     postImage();    //save it as an object containing its GPS coordinates, keypoints, descriptors, add that object to the list of objects
 
                     wallView.removeView(previewView);
-                    tracking.setChecked(true);
+                   // tracking.setChecked(true);
+                    tracking.setChecked(false);
 
                     post.setText("CHOOSE IMAGE");
                     photoChosen = false;
@@ -205,7 +206,7 @@ public class MainActivity extends Activity {
                     sceneRenderer = new PictureRenderer(MainActivity.this);
                     sceneView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     sceneView.setRenderer(sceneRenderer);
-                    wallView.addView(sceneView);
+                    wallView.addView(sceneView);  // Puts GL surface on the screen
                     sceneRenderer.attachToWall();
                     currentPicturesIndexesList = new ArrayList();
                     messages.setVisibility(View.VISIBLE);
@@ -219,6 +220,7 @@ public class MainActivity extends Activity {
                     }.execute();
                 } else {        //we disabled tracking
                     trackingState = false;
+                    sceneRenderer.removeTables();
                     wallView.removeView(sceneView);
                     messages.setVisibility(View.GONE);
                     imageFound = false;
@@ -469,10 +471,11 @@ public class MainActivity extends Activity {
                     matches_final.add(matches.toList().get(j));
                 }
             }
-            if (matches_final.size() > 150) {
+            if (matches_final.size() > 120) {
+                imageFound = true;
                 currentPictureIndex = i;
             }
-            if(!pictureIsViewed(currentPictureIndex)) {
+            if(!pictureIsViewed(currentPictureIndex) && imageFound) { // if it is not already shown
                 currentPicturesIndexesList.add(currentPictureIndex);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -483,7 +486,8 @@ public class MainActivity extends Activity {
             }
         }
         imageFound = false;
-        newPictureAdded = false;
+            newPictureAdded = false;
+
     }
 
     boolean pictureIsViewed(int index) {

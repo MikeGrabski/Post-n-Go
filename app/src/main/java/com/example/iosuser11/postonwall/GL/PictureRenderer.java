@@ -26,7 +26,6 @@ import static android.opengl.Matrix.*;
 //    private final Context context;
 //
 //    private ArrayList<Table> tableList;
-//    private Table previewTable;
 //
 //    private float[] identMatrix = new float[16];
 //    private float[] projectionMatrix = new float[16];
@@ -202,7 +201,6 @@ public class PictureRenderer implements GLSurfaceView.Renderer
     private final Context context;
 
     private ArrayList<Table> tableList;
-    private Table previewTable;
 
     private float[] identMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
@@ -230,7 +228,6 @@ public class PictureRenderer implements GLSurfaceView.Renderer
     private Bitmap updatedImage;
     private Context mContext;
     private Boolean updateImage = false;
-    private Boolean isPreviewMode = true;
     private boolean isDistanceUpdated  =false;
 //    double translateX;
 //    double translateY;
@@ -277,11 +274,7 @@ public class PictureRenderer implements GLSurfaceView.Renderer
             updateTablePosition();
         }
         //if is preview mode, i.e. picture is chosen but not posted yet
-        else if (isPreviewMode) {
-            previewTable = new Table(mContext, updatedImage,  d,matCache);
-            drawPreview();
-            updateImage =false;
-        }
+
         //if a newer picture is chosen, update image and add to table
         if(updateImage) {
             updateImage();
@@ -312,15 +305,7 @@ public class PictureRenderer implements GLSurfaceView.Renderer
         }
     }
 
-    private void drawPreview(){
-        multiplyMM(pvFTM, 0, projectionMatrix, 0, identMatrix, 0);
-        multiplyMM(pvFTM, 0, pvFTM, 0, pvVM, 0);
-        multiplyMM(pvFTM, 0, pvFTM, 0, pvMM, 0);
-        matCache = motionSensors.getRotationMatrix();
-        translateM(pvFTM, 0, 0, 0, -(d));
-        afterelseif = true;
-        previewTable.draw(pvFTM);
-    }
+
 
     private void updateImage(){
         matCache = motionSensors.getRotationMatrix();
@@ -329,8 +314,7 @@ public class PictureRenderer implements GLSurfaceView.Renderer
     }
 
     public void attachToWall() {
-        pttvel = true;
-        isPreviewMode = false;
+        pttvel = true; //
     }
 
     public void updateDistance(int d) {
@@ -338,9 +322,7 @@ public class PictureRenderer implements GLSurfaceView.Renderer
         isDistanceUpdated = true;
     }
 
-    public void setPreviewMode(boolean isPreviewMode){
-        this.isPreviewMode = isPreviewMode;
-    }
+
 
     public void addTable(Context c, Bitmap b, int d) {
         updatedImage = b;
@@ -348,11 +330,9 @@ public class PictureRenderer implements GLSurfaceView.Renderer
         updateDistance(d);
         updateImage = true;
     }
-    public void addPreviewTable(Context c, Bitmap b, int d) {
-        updatedImage = b;
-        mContext = c;
-        updateImage = true;
-        previewTable = new Table(c,b,d,matCache);
-        isPreviewMode = true;
+
+    public void removeTables(){
+        tableList.clear();
     }
+
 }
