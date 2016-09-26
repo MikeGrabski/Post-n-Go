@@ -3,7 +3,9 @@ package com.example.iosuser11.postonwall;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
@@ -15,6 +17,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -294,11 +297,11 @@ public class MainActivity extends Activity {
     }
 
     private void chooseImage() {
-        if (Build.VERSION.SDK_INT >= 23) {
+       // if (Build.VERSION.SDK_INT >= 23) {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
             startActivityForResult(photoPickerIntent, 1);
-        }
+       // }
     }
 
     @Override
@@ -351,7 +354,13 @@ public class MainActivity extends Activity {
         descriptor.compute(imgCurrent, keypointsCurrent, descriptorsCurrent);
 
         PictureObject newPicture = new PictureObject(selectedPicture);
-        newPicture.setLocation(gpsTracker.getLocation());
+        if(gpsTracker.canGetLocation()) {
+            newPicture.setLocation(gpsTracker.getLocation());
+        }
+        else {
+            Toast.makeText(this,"Please enable the GPS and restart app", Toast.LENGTH_LONG).show();
+            finish();
+        }
         newPicture.setKeypoints(keypointsCurrent);
         newPicture.setDescriptors(descriptorsCurrent);
         newPicture.setScale(seekBar.getProgress());
@@ -365,15 +374,22 @@ public class MainActivity extends Activity {
         nearbyPicturesList = new ArrayList<>();
         Location originalLocation;
         Location currentLocation = gpsTracker.getLocation();
+        if(currentLocation != null) {
         for(int i = 0; i < allPicturesList.size(); i++) {
             originalLocation = allPicturesList.get(i).getLocation();
-            if((currentLocation.getLatitude() + (currentLocation.getAccuracy()/111111.0) > originalLocation.getLatitude())&&
-                    (currentLocation.getLatitude() - (currentLocation.getAccuracy()/111111.0) < originalLocation.getLatitude())){
-                if((currentLocation.getLongitude() + (currentLocation.getAccuracy()/111111.0) > originalLocation.getLongitude())&&
-                        (currentLocation.getLongitude() - (currentLocation.getAccuracy()/111111.0) < originalLocation.getLongitude())) {
-                    nearbyPicturesList.add(allPicturesList.get(i));
+                if ((currentLocation.getLatitude() + (currentLocation.getAccuracy() / 111111.0) > originalLocation.getLatitude()) &&
+                        (currentLocation.getLatitude() - (currentLocation.getAccuracy() / 111111.0) < originalLocation.getLatitude())) {
+                    if ((currentLocation.getLongitude() + (currentLocation.getAccuracy() / 111111.0) > originalLocation.getLongitude()) &&
+                            (currentLocation.getLongitude() - (currentLocation.getAccuracy() / 111111.0) < originalLocation.getLongitude())) {
+                        nearbyPicturesList.add(allPicturesList.get(i));
+                    }
                 }
             }
+
+        }
+        else {
+            Toast.makeText(this,"Please enable the GPS and restart app", Toast.LENGTH_LONG).show();
+            finish();
         }
         messages.setText("There are " + nearbyPicturesList.size() + " pictures posted nearby.");
     }
